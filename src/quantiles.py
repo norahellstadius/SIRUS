@@ -69,14 +69,20 @@ def cutpoints(X: np.ndarray, q: int) -> np.ndarray:
     """
     _, p = X.shape  # Assuming X is a 2D array-like structure
     cps = [np.unique(cutpoint_for_feature(X[:, feature], q)) for feature in range(p)]
-    return np.array(cps)
+    return cps
 
 
 if __name__ == "__main__":
-    from src.preprocess.get_data import get_BW_data
+    from src.preprocess.get_data import get_BW_data, get_boston_housing
     from sklearn.model_selection import train_test_split
 
-    X, y = get_BW_data("/Users/norahallqvist/Code/SIRUS/data/BreastWisconsin.csv")
+    # X, y = get_BW_data("/Users/norahallqvist/Code/SIRUS/data/BreastWisconsin.csv")
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     X, y, test_size=0.2, random_state=1
+    # )
+    # splits = cutpoints(X=X_train, q=10)
+
+    X, y = get_boston_housing("/Users/norahallqvist/Code/SIRUS/data/boston_housing.csv")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=1
     )

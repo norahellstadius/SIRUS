@@ -1,7 +1,7 @@
 import re
 import numpy as np 
-from tree_solvers import RandomForest
-from rule_filter import Condition, Path, Rule, filter_linearly_dependent_rules
+from sandbox.tree_solvers import RandomForest
+from sandbox.rule_filter import Condition, Path, Rule, filter_linearly_dependent_rules
 
 class SIRUS_Solver:
     def __init__(self, X_train, X_test, y_train, y_test, num_subsampled_points, frequency_threshold, max_tree_depth, q, number_trees):

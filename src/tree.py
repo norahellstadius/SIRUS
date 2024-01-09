@@ -2,7 +2,6 @@ import random
 import numpy as np
 from typing import Callable, Tuple, Union
 from quantiles import cutpoints
-from sklearn.metrics import mean_absolute_error
 
 # ------ Tree -----------
 
@@ -501,8 +500,8 @@ def rss(y):
 
 
 class DecisionTreeRegression(DecisionTree):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, max_depth=2, min_data_in_leaf=5, random_state=1):
+        super().__init__(max_depth, min_data_in_leaf, random_state)
 
     @staticmethod
     def score_improved(best_score: float, current_score: float) -> bool:
@@ -521,16 +520,20 @@ class DecisionTreeRegression(DecisionTree):
 
     "Data to be re-used in the loop on features and splitpoints. In julia library they call it _reused_data "
 
+    @staticmethod
     def reused_data(self, y: list = [], classes: list = []) -> float:
         return 0
 
+    @staticmethod
     def current_score(
         y: list, yl: list, yr: list, classes: list = [], starting_impurity: float = 0
     ) -> float:
         return rss(yl) + rss(yr)
 
+    @staticmethod
     def create_leaf(y, classes=[]):
-        return Leaf([np.mean(y)])
+        pred_val = [np.mean(y)]
+        return Leaf(pred_val)
 
     @staticmethod
     def start_score():
@@ -558,29 +561,24 @@ class DecisionTreeRegression(DecisionTree):
 
         # Check if it's a leaf node (instance of Leaf class)
         if isinstance(node, Leaf):
-            return node.value 
+            return node.value[0] #single value stored in a list
         else:
             # Handle the case where the loop exits for reasons other than reaching a leaf
             raise ValueError("Invalid tree structure encountered.")
 
 
-    def predict_avg(self, X_set):
+    def predict(self, X_set):
         """Returns the predicted avg for a given data set"""
 
-        pred_probs = np.apply_along_axis(self.predict_one_sample, 1, X_set)
-        return pred_probs
-
-    def predict(self, X_set):
-        """Returns the predicted probs for a given data set"""
-
-        pred_avg = self.predict_avg(X_set)
-        return pred_avg
-
+        pred_avgs = np.apply_along_axis(self.predict_one_sample, 1, X_set)
+        return pred_avgs
 
 
 if __name__ == "__main__":
-    from src.preprocess.get_data import get_BW_data
+    from src.preprocess.get_data import get_BW_data, get_boston_housing
     from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_absolute_error
+
 
     X, y = get_BW_data("/Users/norahallqvist/Code/SIRUS/data/BreastWisconsin.csv")
     X_train, X_test, y_train, y_test = train_test_split(
@@ -594,6 +592,18 @@ if __name__ == "__main__":
     tree_model.fit(X_train, y_train)
     y_pred = tree_model.predict(X_test)
     
+
+    # X, y = get_boston_housing("/Users/norahallqvist/Code/SIRUS/data/boston_housing.csv")
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     X, y, test_size=0.2, random_state=1
+    # )
+    # y_train = np.array(y_train)
+    # y_test = np.array(y_test)
+
+    # splits = cutpoints(X=X_train, q=10)
+    # tree_model = DecisionTreeRegression(max_depth=5, min_data_in_leaf=5, random_state=10)
+    # tree_model.fit(X_train, y_train)
+    # y_pred = tree_model.predict(X_test)
     print("mean absolute error: ", mean_absolute_error(y_test, y_pred))
 
     def print_tree(node, indent="", prefix="Root"):
