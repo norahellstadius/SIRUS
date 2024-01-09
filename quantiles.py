@@ -1,11 +1,12 @@
 import numpy as np
 
-def _rough_cutpoint_index_estimate(n:int, quantile:float) -> int:
+
+def _rough_cutpoint_index_estimate(n: int, quantile: float) -> int:
     """
     Return a rough estimate for the index of the cutpoint.
-    
+
     Choose the highest suitable index if there is more than one suitable index.
-    
+
     Parameters:
     - n (int): The length of the data array.
     - quantile (float): The desired quantile value between 0.0 and 1.0.
@@ -15,7 +16,8 @@ def _rough_cutpoint_index_estimate(n:int, quantile:float) -> int:
     """
     return int(np.ceil(quantile * n))
 
-def empirical_quantile(data_array: np.array, quantile: float) -> float:
+
+def empirical_quantile(data_array: np.ndarray, quantile: float) -> float:
     """
     Return the empirical `quantile` for data `data_array`.
 
@@ -32,10 +34,11 @@ def empirical_quantile(data_array: np.array, quantile: float) -> float:
     sorted_data = np.sort(data_array)
     return sorted_data[index]
 
-def cutpoint_for_feature(data_array:np.array, q:int) -> np.array:
+
+def cutpoint_for_feature(data_array: np.ndarray, q: int) -> np.ndarray:
     """
     Return a vector of `q` cutpoints taken from the empirical distribution of data `data_array`.
-    
+
     Parameters:
     - data_array (array-like): The input data array.
     - q (int): The number of cutpoints to generate.
@@ -48,12 +51,15 @@ def cutpoint_for_feature(data_array:np.array, q:int) -> np.array:
     # Tree on left and right have always respectively length 0 and 1 then anyway.
     length = q + 2
     quantiles = np.linspace(0.0, 1.0, length)[1:-1]
-    return np.array([empirical_quantile(data_array, quantile) for quantile in quantiles])
+    return np.array(
+        [empirical_quantile(data_array, quantile) for quantile in quantiles]
+    )
 
-def cutpoints(X:np.array, q:int) -> np.array:
+
+def cutpoints(X: np.ndarray, q: int) -> np.ndarray:
     """
     Return a vector of vectors containing cutpoints for each feature in the dataset `X`.
-    
+
     Parameters:
     - X (array-like): The dataset with features.
     - q (int): The number of cutpoints to generate for each feature. Default is 10.
@@ -63,7 +69,7 @@ def cutpoints(X:np.array, q:int) -> np.array:
     """
     _, p = X.shape  # Assuming X is a 2D array-like structure
     cps = [np.unique(cutpoint_for_feature(X[:, feature], q)) for feature in range(p)]
-    return cps
+    return np.array(cps)
 
 
 if __name__ == "__main__":
@@ -71,6 +77,7 @@ if __name__ == "__main__":
     from sklearn.model_selection import train_test_split
 
     X, y = get_BW_data("/Users/norahallqvist/Code/SIRUS/data/BreastWisconsin.csv")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
-    splits = cutpoints(X = X_train, q =10)
-
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=1
+    )
+    splits = cutpoints(X=X_train, q=10)
