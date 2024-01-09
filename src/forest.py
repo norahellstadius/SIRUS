@@ -15,7 +15,7 @@ MAX_DEPTH_DEFAULT = 2
 
 
 class RandomForest:
-    def __init__(self, type, max_depth=2, min_data_in_leaf=5, random_state=1) -> None:
+    def __init__(self, type, max_depth=2, min_data_in_leaf=5, n_trees=10, random_state=1) -> None:
         if type not in ["Classification", "Regression"]:
             raise ValueError(
                 "Invalid value for self.type. Expected 'Classification' or 'Regression', but got '{}'.".format(
@@ -27,6 +27,7 @@ class RandomForest:
         self.max_depth = max_depth
         self.seed = random_state
         self.min_data_in_leaf = min_data_in_leaf
+        self.n_trees = n_trees
         self.trees = None
 
     def forest(
@@ -103,7 +104,6 @@ class RandomForest:
         X,
         y,
         colnms=None,
-        n_trees=10,
         max_split_candidates=None,
         partial_sampling=0.5,
         q=10,
@@ -111,7 +111,6 @@ class RandomForest:
     ):
         self.X = X
         self.y = y
-        self.n_trees = n_trees
 
         if quantiles is None:
             quantiles = cutpoints(X, q)
@@ -147,7 +146,7 @@ class RandomForest:
 
 
 if __name__ == "__main__":
-    from src.preprocess.get_data import get_BW_data, get_boston_housing
+    from preprocess.get_data import get_BW_data, get_boston_housing
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import mean_absolute_error
 
@@ -175,7 +174,7 @@ if __name__ == "__main__":
     y_test = np.array(y_test)
 
     splits = cutpoints(X=X_train, q=10)
-    tree_model = RandomForest(type = "Regression", max_depth=2, min_data_in_leaf=5, random_state=1)
+    tree_model = RandomForest(type = "Regression", max_depth=2, min_data_in_leaf=5, n_trees = 10, random_state=1)
     tree_model.fit(X_train, y_train)
     y_pred = tree_model.predict(X_test)
     print("mean absolute error: ", mean_absolute_error(y_test, y_pred))

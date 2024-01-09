@@ -14,9 +14,6 @@ class Leaf:
     For regression, this is a vector of one element.    
     """
 
-    def predict(self):
-        return self.value
-
 class SplitPoint:
     def __init__(self, feature, value, feature_name) -> None:
         """
@@ -575,7 +572,7 @@ class DecisionTreeRegression(DecisionTree):
 
 
 if __name__ == "__main__":
-    from src.preprocess.get_data import get_BW_data, get_boston_housing
+    from preprocess.get_data import get_BW_data, get_boston_housing
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import mean_absolute_error
 
@@ -604,6 +601,7 @@ if __name__ == "__main__":
     # tree_model = DecisionTreeRegression(max_depth=5, min_data_in_leaf=5, random_state=10)
     # tree_model.fit(X_train, y_train)
     # y_pred = tree_model.predict(X_test)
+    
     print("mean absolute error: ", mean_absolute_error(y_test, y_pred))
 
     def print_tree(node, indent="", prefix="Root"):
