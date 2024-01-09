@@ -110,18 +110,14 @@ class DecisionTree():
         node_pred_right = int(np.mean(split_2_data[:,-1]) >= 0.5)
 
 
-        left_path = path + [f"Feature {split_feature_idx} <= {split_feature_val}"]
-        right_path = path + [f"Feature {split_feature_idx} > {split_feature_val}"]
+        left_path = path + [f"Feature {split_feature_idx} < {split_feature_val}"]
+        right_path = path + [f"Feature {split_feature_idx} >= {split_feature_val}"]
 
         self.paths.append(left_path)
         self.paths.append(right_path)
 
         self.rules[' & '.join(left_path)] = node_pred_left
         self.rules[' & '.join(right_path)] = node_pred_right
-
-        # previous_path = [entry.split(' then ')[0] for entry in path]
-        # left_path = previous_path + [f"Feature {split_feature_idx} <= {split_feature_val} then Y = {node_pred_left}"]
-        # right_path = previous_path + [f"Feature {split_feature_idx} > {split_feature_val} then Y = {node_pred_right}"]
 
         node.left = self._create_tree(split_1_data, current_depth, num_features, valid_splits, left_path)
         node.right = self._create_tree(split_2_data, current_depth, num_features, valid_splits, right_path)
@@ -285,6 +281,8 @@ if __name__ == "__main__":
 
     y_pred = rf_model.predict(X_test)
     print("test accuracy: ", np.mean(y_pred == y_test))
+
+    
 
 
 
