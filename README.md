@@ -1,3 +1,1 @@
-gini.py 
-- add classification class, leaf struct 
-- 
+Working in progress to develope a python library for SIRUS....
